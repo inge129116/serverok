@@ -1,4 +1,23 @@
 import sys
+import json
+
+def add_server(nieuwe_server):
+    print(f"{nieuwe_server} toevoegen")
+    servers.append(nieuwe_server)
+    try:
+        with open("servers.json","w") as f:
+            json.dump(servers,f)
+    except:
+        print("servers.json niet gevonden" )
+        
+def delete_server(oude_server):
+    print(f"{servers.pop(int(oude_server))} verwijderen")
+    
+    try:
+        with open("servers.json","w") as f:
+            json.dump(servers,f)
+    except:
+        print("servers.json niet gevonden" )
 
 def showlist():
     for server in enumerate(servers):
@@ -8,11 +27,11 @@ def showlist():
 def run_cli(args):
     match args[0]:
         case "1": #json overschrijven
-            print("toevoegen")
+            add_server(args[1])
         case "2": #json overschrijven
-            print("verwijderen")
+            delete_server(args[1])
         case "3":
-            print("lijst tonen")
+            showlist()
 
 def run_int():
     
@@ -21,18 +40,26 @@ def run_int():
         print(f"je hebt gekozen voor optie {optie}")
         match optie:
             case "1": #json overschrijven
-                print("toevoegen")
-                server = input("geef de url van de server: ")
-                servers.append(server)
+                
+                add_server(input("geef de url van de server: "))
+                
             case "2": #json overschrijven
-                nummer_server = input("geef de nummer van de server die je wil verwijderen")
-                servers.pop(nummer_server)
+                
+                delete_server(input("geef de nummer van de server die je wil verwijderen"))
+                
             case "3":
                 showlist() #enumerate bekijken
             case "0":
                 sys.exit(0)
 
-servers = [] #moet uit json file met try expect en json niet in git servers.json in git ignore
+ #moet uit json file met try expect en json niet in git servers.json in git ignore
+try:
+    with open("servers.json","r") as f:
+        servers = json.load(f)
+except:
+        servers = []
+        print("servers.json niet gevonden" )
+
 if len(sys.argv) >= 2:
     run_cli(sys.argv[1:])
 else:
