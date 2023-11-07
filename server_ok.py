@@ -1,5 +1,6 @@
 import sys
 import json
+from ping3 import ping
 
 def add_server(nieuwe_server):
     print(f"{nieuwe_server} toevoegen")
@@ -22,6 +23,25 @@ def delete_server(oude_server):
 def showlist():
     for server in enumerate(servers):
             print(server)
+
+def check_ping():
+    #deze check werkt enkel als de server ping toe staat!
+    checks =[]
+    for server in servers:
+        
+        answer = ping(server)
+        if answer == None:
+            up = "down"
+        else:
+            up = "up"
+        checks.append(f"{server}:{up}")
+    print(checks)
+    try:
+        with open("checks.json","w") as f:
+            json.dump(checks,f)
+    except:
+        print("checks.json niet gevonden" )
+
     
 
 def run_cli(args):
@@ -32,11 +52,13 @@ def run_cli(args):
             delete_server(args[1])
         case "3":
             showlist()
+        case "4":
+            check_ping()
 
 def run_int():
     
     while(True):
-        optie = input("geef het getal van jou keuze: \n0. stoppen\n1. toevoegen \n2. verwijderen \n3. lijst tonen \n")
+        optie = input("geef het getal van jou keuze: \n0. stoppen\n1. toevoegen \n2. verwijderen \n3. lijst tonen \n4. ping check \n")
         print(f"je hebt gekozen voor optie {optie}")
         match optie:
             case "1": 
@@ -49,8 +71,22 @@ def run_int():
                 
             case "3":
                 showlist() #enumerate
+
+            case "4":
+                check_ping()
             case "0":
                 sys.exit(0)
+
+def run_checks():
+    while(True):
+        check_optie = input("geef het getal van jou keuze: \n0. stoppen\n1. ping check \n")
+        print(f"je hebt gekozen voor optie {check_optie}")
+        match check_optie:
+            case "1": 
+                check_ping()    
+            case "0":
+                sys.exit(0)
+
 
  #servers list moet uit json file met try expect en json niet in git servers.json in git ignore
 try:
@@ -69,4 +105,9 @@ except:
 if len(sys.argv) >= 2:
     run_cli(sys.argv[1:])
 else:
-    run_int()
+    modus = input("wil u dit in managment of check modus uitvoeren (standaart check) ")
+    if modus == "managment":
+        run_int()
+    else:
+        run_checks()
+        
