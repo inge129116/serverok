@@ -1,6 +1,7 @@
 import sys
 import json
 from ping3 import ping
+import datetime
 
 def add_server(nieuwe_server):
     print(f"{nieuwe_server} toevoegen")
@@ -26,7 +27,6 @@ def showlist():
 
 def check_ping():
     #deze check werkt enkel als de server ping toe staat!
-    checks =[]
     for server in servers:
         
         answer = ping(server)
@@ -34,7 +34,7 @@ def check_ping():
             up = "down"
         else:
             up = "up"
-        checks.append(f"{server}:{up}")
+        checks.append(f"time: {datetime.datetime.now()} {server}:{up}")
     print(checks)
     try:
         with open("checks.json","w") as f:
