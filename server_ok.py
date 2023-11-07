@@ -2,6 +2,8 @@ import sys
 import json
 from ping3 import ping
 import datetime
+from bs4 import BeautifulSoup
+
 
 def add_server(nieuwe_server):
     print(f"{nieuwe_server} toevoegen")
@@ -27,6 +29,7 @@ def showlist():
 
 def check_ping():
     #deze check werkt enkel als de server ping toe staat!
+    #bestand wordt in map waar jij staat geplaatst niet map van programma!
     for server in servers:
         
         answer = ping(server)
@@ -36,11 +39,30 @@ def check_ping():
             up = "up"
         checks.append(f"time: {datetime.datetime.now()} {server}:{up}")
     print(checks)
+    web_page(checks)
     try:
         with open("checks.json","w") as f:
             json.dump(checks,f)
+            print("bestand aangevuld")
     except:
         print("checks.json niet gevonden" )
+
+def web_page(content_to_add):
+    with open("template.html", "r") as html_file:
+    # Parse the HTML content using BeautifulSoup
+        soup = BeautifulSoup(html_file, "html.parser")
+    target_div = soup.find("div", id="checks")
+    print("start web page")
+    for item in content_to_add:
+        new_element = BeautifulSoup("\n <p>"+item , "html.parser")
+        target_div.extend(new_element)
+    with open("index.html", "w") as html_file:
+        html_file.write(str(soup))
+    #with open("index.html", "a") as html_file:
+    # schrijf de inhoud van de lijst naar de html file
+    #    for line in checks:
+    #        html_file.write("<p>"+line +"<\p> \n")
+    #        print("Content added to index.html")
 
     
 
